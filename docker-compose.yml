@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  qr-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qr-generator
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./qr:/app/qr
+    networks:
+      - qr-network
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: qr-redis
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - qr-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  qr-network:
+    driver: bridge
+
+volumes:
+  redis-data: 
