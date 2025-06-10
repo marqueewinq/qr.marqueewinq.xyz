@@ -1,7 +1,7 @@
 import qrcode
 import json
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import StreamingResponse, HTMLResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import io
@@ -43,6 +43,11 @@ class QRCodeRequest(BaseModel):
     border: Optional[int] = 4
     fill_color: Optional[str] = "black"
     back_color: Optional[str] = "white"
+
+
+@app.head("/")
+async def head():
+    return Response(status_code=200)
 
 
 @app.get("/", response_class=HTMLResponse)
