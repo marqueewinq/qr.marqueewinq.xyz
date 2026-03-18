@@ -2,6 +2,7 @@ import qrcode
 import json
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import io
@@ -16,6 +17,13 @@ app = FastAPI(
     title="QR Code Generator API",
     description="A simple API for generating QR codes",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://conflux.marqueewinq.xyz"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
